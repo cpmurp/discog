@@ -1,0 +1,2 @@
+brew install bandcamp-dl
+pip3 install bs4

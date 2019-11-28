@@ -1,0 +1,61 @@
+#!/usr/bin/env python3
+import bs4
+import os
+import re
+import sys
+
+bandname = input("Bandname? (must be spelled exactly as in URL)")
+url = bandname+".bandcamp.com"
+if bandname == '':
+	sys.exit()
+cmd = "wget -O "+bandname+" "+url
+ret = os.system(cmd)
+html = open(bandname,'r').read()
+
+soup = bs4.BeautifulSoup(html, "html.parser")
+
+found = []
+for div in soup.find_all("div", {"class":"leftMiddleColumns"}):
+    for link in div.select("a"):
+        found.append((link['href']))
+
+print("Found "+(str(len(found)))+" potential matches.\n")
+
+if (len(found)) == 0:
+	sys.exit()
+
+albRegex = re.compile(r'/album/')
+trkRegex = re.compile(r'/track/')
+httpRegex = re.compile(r'http') # sometimes links are universal
+links = []
+
+for x in range(len(found)):
+	a = albRegex.search(found[x])
+	t = trkRegex.search(found[x])
+	h = httpRegex.search(found[x])
+	if h is not None:
+		temp=found[x].split(".com")
+		found[x]=temp[1]
+	if a is not None:
+		links.append(found[x])
+	if t is not None:
+		links.append(found[x])
+
+print("DOWNLOADING THE FOLLOWING ALBUMS:\n")
+for x in range(len(links)):
+	print (links[x])
+
+confirm = input("\nAre you sure you'd like to download "+(str(len(links)))+" albums? (y/n)")
+
+if confirm == 'n':
+	sys.exit()
+
+print("Downloading ...\n")
+
+for x in range (len(links)):
+	album_url=url+links[x]
+	cmd= "bandcamp-dl "+album_url
+	os.system(cmd)
+
+print("all done!")
+sys.exit()
