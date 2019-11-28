@@ -6,7 +6,7 @@ import sys
 
 bandname = input("Bandname? ")
 url = bandname+".bandcamp.com"
-cmd = "wget -O "+bandname+" "+url
+cmd = "wget -O "+bandname+" "+url+"/music"
 ret = os.system(cmd)
 html = open(bandname,'r').read()
 
