@@ -4,15 +4,14 @@ import os
 import re
 import sys
 
-bandname = input("Bandname? (must be spelled exactly as in URL)")
+bandname = input("Bandname? ")
 url = bandname+".bandcamp.com"
-if bandname == '':
-	sys.exit()
 cmd = "wget -O "+bandname+" "+url
 ret = os.system(cmd)
 html = open(bandname,'r').read()
 
 soup = bs4.BeautifulSoup(html, "html.parser")
+os.remove(bandname)
 
 found = []
 for div in soup.find_all("div", {"class":"leftMiddleColumns"}):
@@ -53,8 +52,10 @@ if confirm == 'n':
 print("Downloading ...\n")
 
 for x in range (len(links)):
-	album_url=url+links[x]
+	album_url= "https://"+url+links[x]
 	cmd= "bandcamp-dl "+album_url
+	print (album_url)
+	print (cmd)
 	os.system(cmd)
 
 print("all done!")
